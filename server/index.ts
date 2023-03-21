@@ -16,7 +16,7 @@ import { IMovie } from './models/IMovie';
         console.log('Database Connected');
     })
 
-    const clientOrigin = 'http://localhost:4200';
+    const clientOrigin = 'http://localhost:3000';
 
     const app = express();
     const httpServer = new http.Server(app);

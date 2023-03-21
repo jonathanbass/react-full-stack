@@ -1,0 +1,9 @@
+div.MuiFormGroup-root {
+    display: contents;
+}
+
+div.MuiFormControl-root {
+    display: inline-flex;
+    width: 150px;
+    margin: 0 0.4rem;
+}
