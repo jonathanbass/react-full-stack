@@ -2,6 +2,10 @@ span.MuiCircularProgress-root {
     margin: auto auto;
 }
 
+div.MuiBox-root {
+    display: flex;
+}
+
 html, body, div.MuiBox-root, div#root {
     height: 98%;
 }

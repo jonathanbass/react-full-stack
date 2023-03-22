@@ -9,7 +9,7 @@ import { IMovie } from "./movie";
 import { socket } from "../../socket";
 
 function Movies() {
-    const logMovies = (movies: IMovie[]) => {
+    const updateMovies = (movies: IMovie[]) => {
         dispatch(setMovies(movies));
     }
 
@@ -18,7 +18,7 @@ function Movies() {
 
     useEffect(() => {
         dispatch(getMoviesAsync());
-        socket.on('movies-updated', logMovies);
+        socket.on('movies-updated', updateMovies);
     }, [dispatch]);
 
     if (loading === "idle") {
@@ -32,7 +32,7 @@ function Movies() {
     }
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box>
             <CircularProgress />
         </Box>
     );
