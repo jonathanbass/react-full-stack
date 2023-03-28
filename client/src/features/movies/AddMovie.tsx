@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, Input, InputLabel } from '@mui/material';
+import { Button, FormControl, Input, InputLabel } from '@mui/material';
 import { useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import "./AddMovie.css";

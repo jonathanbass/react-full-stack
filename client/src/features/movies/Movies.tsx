@@ -9,14 +9,14 @@ import { IMovie } from "./movie";
 import { socket } from "../../socket";
 
 function Movies() {
-    const updateMovies = (movies: IMovie[]) => {
-        dispatch(setMovies(movies));
-    }
-
     const loading = useAppSelector(loadingStatus);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        const updateMovies = (movies: IMovie[]) => {
+            dispatch(setMovies(movies));
+        };
+
         dispatch(getMoviesAsync());
         socket.on('movies-updated', updateMovies);
     }, [dispatch]);
