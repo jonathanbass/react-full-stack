@@ -1,36 +1,70 @@
-import Movie, { IMovie, MovieModel } from "../models/IMovie";
+import { IMovie } from "../models/IMovie";
+import { DeleteItemCommand, DynamoDBClient, GetItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { v4 as uuidv4 } from "uuid";
 
 export class MoviesClient {
-    private constructor() {
+    private documentClient: DynamoDBClient;
+    private tableName = "movies"
 
+    private constructor() {
+        const dynamoClient = new DynamoDBClient({ region: "eu-west-1" });
+        this.documentClient = DynamoDBDocumentClient.from(dynamoClient);
     }
 
     public static Create = () => {
-        const instance = new MoviesClient();
-        return instance;
+        return new MoviesClient();
     };
 
     GetMovie = async (id: string) => {
-        return await Movie.findById(id).select('-__v');
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                id: {
+                    S: id
+                }
+            }
+        };
+
+        const scanCommand = new GetItemCommand(params);
+        const data = await this.documentClient.send(scanCommand);
+        return unmarshall(data.Item ?? {});
     }
 
     GetMovies = async () => {
-        const movies = await Movie.find().select('-__v');
-        return movies;
+        const scanCommand = new ScanCommand({ TableName: this.tableName });
+        const data = await this.documentClient.send(scanCommand);
+        return data.Items?.map((item) => unmarshall(item)) as IMovie[];
     }
 
     CreateMovie = async (movie: IMovie) => {
-        const document = new Movie(movie);
-        document.save();
-        return document.id;
+        movie.id = uuidv4();
+
+        const params = {
+            TableName: this.tableName,
+            Item: movie
+        };
+
+        await this.documentClient.send(new PutCommand(params));
+        return movie.id;
     }
 
     UpdateMovie = async (id: string, updatedMovie: IMovie) => {
-        await Movie.findByIdAndUpdate(id, updatedMovie);
+
     }
 
     DeleteMovie = async (id: string) => {
-        const movie = await Movie.findByIdAndDelete(id);
-        return movie?.id;
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                id: {
+                    S: id
+                }
+            }
+        };
+
+        const scanCommand = new DeleteItemCommand(params);
+        await this.documentClient.send(scanCommand);
     }
 }

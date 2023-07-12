@@ -40,7 +40,7 @@ function MoviesList() {
                                     <TableCell>{movie.runtime}</TableCell>
                                     <TableCell>{movie.year}</TableCell>
                                     <TableCell>
-                                        <IconButton color="primary" onClick={() => deleteMovie(movie._id as string)}>
+                                        <IconButton color="primary" onClick={() => deleteMovie(movie.id as string)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>

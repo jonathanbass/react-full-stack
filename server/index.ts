@@ -1,27 +1,12 @@
 import * as express from 'express';
-import * as dotenv from 'dotenv';
-import * as http from 'http';
-import mongoose from 'mongoose';
-import { Server } from 'socket.io';
+import * as serverless from "serverless-http";
 import { MoviesController } from './controllers/MoviesController';
-import { IMovie } from './models/IMovie';
 
 (async () => {
-    mongoose.set('strictQuery', true);
-    dotenv.config();
-    const connectionString = process.env.DATABASE_URL || '.';
-    mongoose.connect(connectionString);
-    const database = mongoose.connection;
-    database.once('connected', () => {
-        console.log('Database Connected');
-    })
-
-    const clientOrigin = 'http://localhost:3000';
+    const clientOrigin = 'https://test.d35ucue36jlldo.amplifyapp.com';
 
     const app = express();
-    const httpServer = new http.Server(app);
-    const io = new Server(httpServer, { cors: { origin: clientOrigin } });
-
+    
     app.use(express.json());
     app.use((_, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', clientOrigin);
@@ -30,11 +15,7 @@ import { IMovie } from './models/IMovie';
         next();
     });
 
-    const emitUpdatedMovies = async (movies: IMovie[]) => {
-        io.emit('movies-updated', movies);
-    }
-
-    const moviesController = await MoviesController.Create(emitUpdatedMovies);
+    const moviesController = MoviesController.Create();
 
     app.get('/movies/:id', moviesController.getMovie);
 
@@ -48,5 +29,9 @@ import { IMovie } from './models/IMovie';
 
     const port = process.env.PORT || 3001;
 
-    httpServer.listen(port, () => console.log(`Express API listening on PORT ${port}`));
+    if (process.env.ENVIRONMENT === "lambda") {
+        exports.handler = serverless(app);
+    } else {
+        app.listen(port, () => console.log(`Express API listening on PORT ${port}`));
+    }
 })();

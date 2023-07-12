@@ -2,7 +2,7 @@ import axios from 'axios';
 import { IMovie } from './movie';
 
 export class MoviesService {
-    private static moviesUrl = "http://localhost:3001/movies";
+    private static moviesUrl = "https://e22csgx4l2.execute-api.eu-west-1.amazonaws.com/movies/movies";
 
     static async getMovies() {
         const response = await axios.get<IMovie[]>(this.moviesUrl);
